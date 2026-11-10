@@ -7,7 +7,7 @@ Verified on November 10, 2026 using synthetic project data and PayPal sandbox fu
 The complete path ran through the working browser UI:
 
 1. Loaded the Orbit Studio example with a $300 original brief and three client requests.
-2. Ran live inference through the configured Webex LLM proxy using GPT-4.1.
+2. Ran live inference through the configured model gateway using GPT-4.1.
 3. Received three correctly separated findings: included headline revision ($0), additional mobile checkout (2 hours at $60, $120), and timeline clarification ($0).
 4. Verified the returned quotations against the original brief and message strings on the server.
 5. Created the $120 proposal and generated its private client-review link.

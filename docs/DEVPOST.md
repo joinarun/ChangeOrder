@@ -76,10 +76,10 @@ Potential extensions include importing messages from tools freelancers already u
 - Public repository: https://github.com/joinarun/ChangeOrder
 - Interactive sample: https://joinarun.github.io/ChangeOrder/ — prewritten findings, browser-local state, approval only, no live provider calls.
 - Public demo video: https://www.youtube.com/watch?v=3MrY5qSpn4E — 2:26, showing live AI and actual PayPal sandbox payment.
-- Tools used: GPT-4.1 through the configured Webex LLM proxy, PayPal Invoicing REST API and sandbox, AG Grid Community, React, TypeScript, Vite, Express, Node.js SQLite, and Zod.
+- Tools used: GPT-4.1 through a server-side OpenAI-compatible gateway, PayPal Invoicing REST API and sandbox, AG Grid Community, React, TypeScript, Vite, Express, Node.js SQLite, and Zod.
 - License: MIT, with a root `LICENSE` file.
 - No-key testing: Node.js 24, `npm ci`, then `npm run demo`; open http://localhost:5174. The fixed sample needs no `.env` or login.
-- Full live testing: copy `.env.example` to `.env`, configure owner access and your own live AI and PayPal sandbox credentials, then `npm run dev`; open http://localhost:5173. The recorded corporate proxy may require its authorized network, so judges can use another compatible endpoint with their own credentials. The README explains sandbox buyer compatibility and payment refresh.
+- Full live testing: copy `.env.example` to `.env`, configure owner access and your own live AI and PayPal sandbox credentials, then `npm run dev`; open http://localhost:5173. Judges should use an authorized compatible endpoint with their own credentials. The README explains sandbox buyer compatibility and payment refresh.
 - Repeatable checks: `npm run check` runs typechecking, automated tests, and the production build; `npm run build:demo` builds the standalone browser sample. `npm run evaluate` separately runs the synthetic scenarios against the configured live model.
 
 ## Primary references

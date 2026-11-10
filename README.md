@@ -10,7 +10,7 @@ Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
 
 The browser sample uses **prewritten findings and browser-local storage**. Explore evidence, edit the estimate, and approve or decline a proposal without a login or credentials. It makes no AI or PayPal calls and stops before invoicing. The video separately shows live GPT-4.1 analysis and an actual $120 PayPal sandbox payment confirmed through the API.
 
-![Live scope review showing an included revision and a separate $120 addition](docs/screenshots/scope-review.jpg)
+![Live scope review showing an included revision and a separate $120 addition](docs/screenshots/scope-evidence.png)
 
 ## Try it in two minutes
 
@@ -70,7 +70,7 @@ LLM_PROXY_ACCESS_TOKEN=your-token
 LLM_MODEL=gpt-4.1
 ```
 
-The configured Webex LLM proxy uses the `/openai/v1/chat/completions` endpoint, a bearer token, `x-cisco-app`, and a unique tracking ID. Access may require the appropriate corporate network. You can point the same application at another OpenAI-compatible chat-completions endpoint using your own credentials.
+The server uses a configurable OpenAI-compatible chat-completions gateway with a bearer token. Set the base URL and model for your own authorized provider. Gateway-specific request metadata is handled server-side; no internal service endpoint or shared credential is distributed with the project.
 
 Without AI credentials, use the explicitly labeled **sample walkthrough**. It contains prewritten findings for the supplied story. Live inference failures remain visible and never silently become sample results.
 

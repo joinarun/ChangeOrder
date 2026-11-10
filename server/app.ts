@@ -118,7 +118,7 @@ export function createApp(options: AppOptions = {}) {
       llm: {
         configured: llmConfigured(),
         model: process.env.LLM_MODEL || 'gpt-4.1',
-        provider: 'Webex LLM proxy',
+        provider: 'OpenAI-compatible gateway',
       },
       paypal: {
         configured: paypalConfigured(),
