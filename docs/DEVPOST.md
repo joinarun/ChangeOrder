@@ -1,5 +1,13 @@
 # ChangeOrder
 
+[Official submitted entry](https://devpost.com/software/changeorder) · [Interactive browser sample](https://joinarun.github.io/ChangeOrder/) · [Published 2:26 demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) · [Public MIT-licensed source](https://github.com/joinarun/ChangeOrder)
+
+## Judge access
+
+The public browser sample lets judges inspect the supplied brief and requests, load explicitly prewritten findings, review evidence, edit the estimate, and test client acceptance or decline. It stores data only in that browser and makes no AI or PayPal calls. Review links work in another tab sharing that browser's storage; approval is the endpoint of this sample, and it creates no invoice or paid state.
+
+For the same no-key experience locally, run `npm ci` and `npm run demo`, then open http://localhost:5174. No `.env`, login, model access, or PayPal account is needed. The complete local build described in the README enables live analysis and actual sandbox invoicing with the judge's own credentials. The public video demonstrates that full integrated flow with fictional project data and sandbox funds.
+
 ## Elevator pitch
 
 ChangeOrder helps freelancers turn changing client requests into clear, agreed, paid work. AI links each proposed scope change to the original brief and the client’s messages. Both people approve the extra work before a separate PayPal invoice collects payment.
@@ -24,11 +32,15 @@ The language model interprets unstructured project briefs and client messages. I
 
 The application uses React and TypeScript for the workspace and client review screens. An Express server stores project history in SQLite. GPT-4.1 runs through the configured LLM proxy and returns structured scope findings. Zod validates the response, and application code checks quoted evidence against the original sources. Prices use integer cents and reviewed hours and rates.
 
+AG Grid Community powers an evidence ledger in scope review. Users can filter and sort findings, inspect source-evidence details, edit estimated hours, and select additional-work rows. These controls share state with the review cards and proposal total. Included work and clarification cannot be selected for a charge.
+
 Shared proposals preserve their terms. Client acceptance and invoice payment are separate states. PayPal Invoicing creates a new invoice for the accepted addition, and invoice reconciliation reads the provider's actual status. The server keeps credentials out of browser code. The repository's README describes live configuration and the explicitly labeled sample walkthrough.
 
 ## Verified prototype result
 
 The complete flow ran on November 10, 2026: live GPT-4.1 analysis, source-checked findings, a $120 draft, client review and acceptance, a real PayPal sandbox invoice, sandbox card payment, and an authenticated PayPal API refresh confirming `PAID` with $120 received. The invoice was `INV2-JDLS-UTKF-VGMS-DUD8`. All project data and money in this scenario are test data.
+
+The separately recorded public demo shows a fresh run with invoice `INV2-FNSQ-7F8U-BP9S-425P`. The model initially suggested eight hours; the freelancer changed the estimate to two hours before sharing a $120 proposal. This human review is visible in the recording. The recording demonstrates the core live flow; the current interactive sample and source also contain the evidence ledger.
 
 The local demonstration confirmed payment by refreshing the PayPal invoice API. It did not test live webhook delivery to localhost. Automated tests cover webhook signature rejection and duplicate-event handling with a test gateway.
 
@@ -44,7 +56,7 @@ All scenario details are fictional. A freelancer agrees to a $300 landing page. 
 
 ## Impact hypothesis
 
-We expect clearer scope decisions to reduce uncomfortable billing conversations and help freelancers collect payment for agreed additional work. These are hypotheses for user testing, not measured outcomes. Initial validation should measure time to prepare a change proposal, client understanding, acceptance or clarification rate, and confirmed payment completion.
+We expect clearer scope decisions to reduce uncomfortable billing conversations and help freelancers collect payment for agreed additional work. These are hypotheses for user testing, not measured outcomes. Initial validation should measure time to prepare a change proposal, client understanding, acceptance or clarification rate, and confirmed payment completion. [IMPACT.md](IMPACT.md) documents sourced problem evidence, a bounded comparison with existing workflows, illustrative project economics, and the validation still needed. It makes no claim of customer adoption or measured revenue gains.
 
 ## Business model hypothesis
 
@@ -58,14 +70,17 @@ Language models can produce plausible quotations, so the application validates e
 
 Potential extensions include importing messages from tools freelancers already use, richer proposal revisions, and agency collaboration. These are roadmap ideas rather than implemented features.
 
-## Submission fields to complete
+## Submission and testing links
 
-- Public repository URL: https://github.com/joinarun/ChangeOrder
-- Functional demo: follow the repository README to run locally. The development interface uses http://localhost:5173.
-- Demo video: add a publicly visible YouTube link under three minutes.
-- Tools used: GPT-4.1 through the configured Webex LLM proxy, PayPal Invoicing REST API and sandbox, React, TypeScript, Vite, Express, Node.js SQLite, and Zod.
+- Official submitted entry: https://devpost.com/software/changeorder
+- Public repository: https://github.com/joinarun/ChangeOrder
+- Interactive sample: https://joinarun.github.io/ChangeOrder/ — prewritten findings, browser-local state, approval only, no live provider calls.
+- Public demo video: https://www.youtube.com/watch?v=3MrY5qSpn4E — 2:26, showing live AI and actual PayPal sandbox payment.
+- Tools used: GPT-4.1 through the configured Webex LLM proxy, PayPal Invoicing REST API and sandbox, AG Grid Community, React, TypeScript, Vite, Express, Node.js SQLite, and Zod.
 - License: MIT, with a root `LICENSE` file.
-- Testing instructions: Node.js 24, `npm ci`, copy `.env.example` to `.env`, configure owner access and optional live integrations, then `npm run dev`. The README explains the sample walkthrough, live AI, sandbox buyer accounts, and payment refresh. `npm run check` runs the automated checks, and `npm run evaluate` runs the separate live semantic evaluation.
+- No-key testing: Node.js 24, `npm ci`, then `npm run demo`; open http://localhost:5174. The fixed sample needs no `.env` or login.
+- Full live testing: copy `.env.example` to `.env`, configure owner access and your own live AI and PayPal sandbox credentials, then `npm run dev`; open http://localhost:5173. The recorded corporate proxy may require its authorized network, so judges can use another compatible endpoint with their own credentials. The README explains sandbox buyer compatibility and payment refresh.
+- Repeatable checks: `npm run check` runs typechecking, automated tests, and the production build; `npm run build:demo` builds the standalone browser sample. `npm run evaluate` separately runs the synthetic scenarios against the configured live model.
 
 ## Primary references
 

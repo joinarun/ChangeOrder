@@ -4,6 +4,8 @@ import {
   useMemo,
   useRef,
   useState,
+  lazy,
+  Suspense,
   type FormEvent,
   type ReactNode,
 } from 'react';
@@ -62,6 +64,13 @@ import type {
   ReviewDetail,
   SessionState,
 } from '../server/types';
+const ScopeLedger = lazy(() =>
+  import('./ScopeLedger').then((module) => ({ default: module.ScopeLedger })),
+);
+
+const PUBLIC_DEMO = import.meta.env.MODE === 'demo';
+const SOURCE_URL = 'https://github.com/joinarun/ChangeOrder';
+const VIDEO_URL = 'https://www.youtube.com/watch?v=3MrY5qSpn4E';
 
 type Stage = 'brief' | 'scope' | 'proposal' | 'activity';
 type ModalName = 'new-project' | 'guide' | 'integrations' | 'edit-proposal' | null;
@@ -73,6 +82,7 @@ const stages: { id: Stage; label: string }[] = [
 ];
 
 async function api<T>(path: string, options: RequestInit = {}): Promise<T> {
+  if (PUBLIC_DEMO) return (await import('./demo-api')).demoApi<T>(path, options);
   const res = await fetch(`/api${path}`, {
     credentials: 'same-origin',
     ...options,
@@ -137,12 +147,50 @@ function Status({ value }: { value: string }) {
 }
 function Brand() {
   return (
-    <a className="brand" href="/" aria-label="ChangeOrder home">
+    <a className="brand" href={import.meta.env.BASE_URL} aria-label="ChangeOrder home">
       <span className="brand-mark">co</span>
       <span>
         ChangeOrder<small>Good work, clearly agreed.</small>
       </span>
     </a>
+  );
+}
+function PublicSampleNotice({ onStart, busy = false }: { onStart?: () => void; busy?: boolean }) {
+  if (!PUBLIC_DEMO) return null;
+  return (
+    <aside className="public-sample-notice" aria-label="Interactive sample information">
+      <div>
+        <strong>
+          <BookOpen size={14} /> Try the scope-to-approval flow
+        </strong>
+        <p>
+          Prewritten sample findings. Your edits and test approvals stay in this browser. Client
+          review opens in another tab of the same browser. Live AI and PayPal invoicing require the
+          full local build with your own credentials.
+        </p>
+      </div>
+      <div className="public-sample-actions">
+        {onStart && (
+          <button className="sample-start" onClick={onStart} disabled={busy}>
+            <Sparkles size={12} /> Review supplied requests <ArrowRight size={11} />
+          </button>
+        )}
+        <a href={VIDEO_URL} target="_blank" rel="noreferrer">
+          Watch the real sandbox payment <ExternalLink size={11} />
+        </a>
+        <a href={`${SOURCE_URL}#run-locally`} target="_blank" rel="noreferrer">
+          Run the full app <ArrowRight size={11} />
+        </a>
+        <button
+          onClick={async () => {
+            (await import('./demo-api')).resetDemo();
+            window.location.assign(import.meta.env.BASE_URL);
+          }}
+        >
+          <RefreshCw size={11} /> Reset sample
+        </button>
+      </div>
+    </aside>
   );
 }
 function Button({
@@ -221,7 +269,9 @@ function EvidenceQuotes({ evidence }: { evidence: Evidence[] }) {
 }
 
 export default function App() {
-  const reviewToken = window.location.pathname.match(/^\/review\/([^/]+)\/?$/)?.[1];
+  const reviewToken = PUBLIC_DEMO
+    ? new URLSearchParams(window.location.search).get('review')
+    : window.location.pathname.match(/^\/review\/([^/]+)\/?$/)?.[1];
   return reviewToken ? <ClientReview token={reviewToken} /> : <Workspace />;
 }
 
@@ -240,6 +290,7 @@ function Workspace() {
   const [toast, setToast] = useState('');
   const [mode, setMode] = useState<'live' | 'sample'>('live');
   const [selectedItems, setSelectedItems] = useState<string[]>([]);
+  const [scopeView, setScopeView] = useState<'cards' | 'ledger'>('cards');
   const [hours, setHours] = useState<Record<string, number>>({});
   const [rate, setRate] = useState(60);
   const [activeOrderId, setActiveOrderId] = useState<string | null>(null);
@@ -400,6 +451,20 @@ function Workspace() {
       setToast('Copy is unavailable. Select the link and copy it from the address bar.');
     }
   };
+  const exportEvidence = () =>
+    run('export', async () => {
+      if (!detail) return;
+      const evidence = await api<unknown>(`/projects/${detail.project.id}/export`);
+      const url = URL.createObjectURL(
+        new Blob([JSON.stringify(evidence, null, 2)], { type: 'application/json' }),
+      );
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'changeorder-evidence.json';
+      link.click();
+      URL.revokeObjectURL(url);
+      setToast('Evidence and activity exported.');
+    });
 
   if (loading)
     return (
@@ -425,7 +490,8 @@ function Workspace() {
   const selectedAnalysisItems =
     detail?.analysis?.items.filter((item) => selectedItems.includes(item.id)) || [];
   const totalCents = selectedAnalysisItems.reduce(
-    (sum, item) => sum + Math.round((hours[item.id] ?? item.estimatedHours) * rate * 100),
+    (sum, item) =>
+      sum + Math.round((hours[item.id] ?? item.estimatedHours) * Math.round(rate * 100)),
     0,
   );
   const analysisStale =
@@ -486,9 +552,11 @@ function Workspace() {
               <span className="truncated">{item.title}</span>
             </button>
           ))}
-          <button onClick={() => setModal('new-project')}>
-            <Plus size={12} /> New project
-          </button>
+          {!PUBLIC_DEMO && (
+            <button onClick={() => setModal('new-project')}>
+              <Plus size={12} /> New project
+            </button>
+          )}
         </div>
         <div className="sidebar-bottom">
           <button className="nav-item" onClick={() => setModal('guide')}>
@@ -502,7 +570,7 @@ function Workspace() {
             <strong>
               <ShieldCheck size={12} /> PayPal sandbox
             </strong>
-            Real API calls. Test money only.
+            {PUBLIC_DEMO ? 'Public sample · no payment calls.' : 'Real API calls. Test money only.'}
           </div>
           <div className="owner">
             <span className="avatar">{initials(project?.freelancerName || 'Your workspace')}</span>
@@ -545,7 +613,11 @@ function Workspace() {
               <span
                 className={`connection-dot ${session.integrations.llm.configured ? '' : 'off'}`}
               />
-              {session.integrations.llm.configured ? 'AI connected' : 'AI setup needed'}
+              {PUBLIC_DEMO
+                ? 'Prewritten sample'
+                : session.integrations.llm.configured
+                  ? 'AI connected'
+                  : 'AI setup needed'}
             </button>
             <span className="vertical-line" />
             <button
@@ -565,6 +637,7 @@ function Workspace() {
           </div>
         </header>
         <div className="workspace">
+          <PublicSampleNotice onStart={analyze} busy={!!busy || !detail} />
           <div className="hero">
             <div>
               <div className="eyebrow">
@@ -584,9 +657,11 @@ function Workspace() {
               <Button className="btn-secondary" onClick={() => setModal('guide')}>
                 <BookOpen size={13} /> How it works
               </Button>
-              <Button className="new-project-btn" onClick={() => setModal('new-project')}>
-                <Plus size={13} /> New project
-              </Button>
+              {!PUBLIC_DEMO && (
+                <Button className="new-project-btn" onClick={() => setModal('new-project')}>
+                  <Plus size={13} /> New project
+                </Button>
+              )}
             </div>
           </div>
           {error && <Alert onClose={() => setError('')}>{error}</Alert>}
@@ -764,29 +839,31 @@ function Workspace() {
                             </div>
                           )}
                         </div>
-                        <form className="message-add" onSubmit={addMessage}>
-                          <label className="screen-reader" htmlFor="new-message">
-                            Add a client request
-                          </label>
-                          <textarea
-                            id="new-message"
-                            placeholder="Paste a new client request…"
-                            value={newMessage}
-                            onChange={(e) => setNewMessage(e.target.value)}
-                            maxLength={12000}
-                          />
-                          <div className="message-add-bottom">
-                            <small>Keep the wording as your client sent it.</small>
-                            <Button
-                              className="btn-secondary btn-sm"
-                              type="submit"
-                              disabled={!newMessage.trim() || !!busy}
-                              busy={busy === 'message'}
-                            >
-                              <Plus size={11} /> Add request
-                            </Button>
-                          </div>
-                        </form>
+                        {!PUBLIC_DEMO && (
+                          <form className="message-add" onSubmit={addMessage}>
+                            <label className="screen-reader" htmlFor="new-message">
+                              Add a client request
+                            </label>
+                            <textarea
+                              id="new-message"
+                              placeholder="Paste a new client request…"
+                              value={newMessage}
+                              onChange={(e) => setNewMessage(e.target.value)}
+                              maxLength={12000}
+                            />
+                            <div className="message-add-bottom">
+                              <small>Keep the wording as your client sent it.</small>
+                              <Button
+                                className="btn-secondary btn-sm"
+                                type="submit"
+                                disabled={!newMessage.trim() || !!busy}
+                                busy={busy === 'message'}
+                              >
+                                <Plus size={11} /> Add request
+                              </Button>
+                            </div>
+                          </form>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -922,27 +999,63 @@ function Workspace() {
                         messages.
                       </div>
                     )}
-                    <div className="review-grid">
+                    <div className="scope-view-switch" role="group" aria-label="Scope review view">
+                      <button
+                        aria-pressed={scopeView === 'cards'}
+                        onClick={() => setScopeView('cards')}
+                      >
+                        <ClipboardCheck size={12} /> Request cards
+                      </button>
+                      <button
+                        aria-pressed={scopeView === 'ledger'}
+                        onClick={() => setScopeView('ledger')}
+                      >
+                        <FileText size={12} /> Evidence ledger
+                      </button>
+                      <span>One review. The same selection and price.</span>
+                    </div>
+                    <div className={`review-grid ${scopeView === 'ledger' ? 'ledger-layout' : ''}`}>
                       <div className="scope-list">
-                        {detail.analysis.items.map((item) => (
-                          <ScopeItem
-                            key={item.id}
-                            item={item}
-                            selected={selectedItems.includes(item.id)}
-                            onSelect={() =>
-                              setSelectedItems((previous) =>
-                                previous.includes(item.id)
-                                  ? previous.filter((id) => id !== item.id)
-                                  : [...previous, item.id],
-                              )
+                        {scopeView === 'ledger' ? (
+                          <Suspense
+                            fallback={
+                              <p className="analysis-subtitle" role="status">
+                                Opening the evidence ledger…
+                              </p>
                             }
-                            hours={hours[item.id] ?? item.estimatedHours}
-                            rate={rate}
-                            onHours={(value) =>
-                              setHours((previous) => ({ ...previous, [item.id]: value }))
-                            }
-                          />
-                        ))}
+                          >
+                            <ScopeLedger
+                              items={detail.analysis.items}
+                              selectedIds={selectedItems}
+                              hours={hours}
+                              rate={rate}
+                              onSelectionChange={setSelectedItems}
+                              onHoursChange={(id, value) =>
+                                setHours((previous) => ({ ...previous, [id]: value }))
+                              }
+                            />
+                          </Suspense>
+                        ) : (
+                          detail.analysis.items.map((item) => (
+                            <ScopeItem
+                              key={item.id}
+                              item={item}
+                              selected={selectedItems.includes(item.id)}
+                              onSelect={() =>
+                                setSelectedItems((previous) =>
+                                  previous.includes(item.id)
+                                    ? previous.filter((id) => id !== item.id)
+                                    : [...previous, item.id],
+                                )
+                              }
+                              hours={hours[item.id] ?? item.estimatedHours}
+                              rate={rate}
+                              onHours={(value) =>
+                                setHours((previous) => ({ ...previous, [item.id]: value }))
+                              }
+                            />
+                          ))
+                        )}
                         <p className="analysis-footnote">
                           AI suggests the scope. You decide what to charge. Every quoted source is
                           checked against the original text.
@@ -965,7 +1078,8 @@ function Workspace() {
                                   <span>
                                     {money(
                                       Math.round(
-                                        (hours[item.id] ?? item.estimatedHours) * rate * 100,
+                                        (hours[item.id] ?? item.estimatedHours) *
+                                          Math.round(rate * 100),
                                       ),
                                     )}
                                   </span>
@@ -1185,8 +1299,9 @@ function Workspace() {
                               </Button>
                               {!session.integrations.paypal.configured && (
                                 <p className="summary-help">
-                                  Connect PayPal sandbox credentials in the server environment to
-                                  create the invoice.
+                                  {PUBLIC_DEMO
+                                    ? 'The public sample stops at approval. Watch the live sandbox payment, or run the full app with your own credentials.'
+                                    : 'Connect PayPal sandbox credentials in the server environment to create the invoice.'}
                                 </p>
                               )}
                             </>
@@ -1294,14 +1409,13 @@ function Workspace() {
                     <h2>
                       <History size={14} /> A record of every agreement
                     </h2>
-                    <a
-                      className="btn btn-secondary btn-sm"
-                      href={`/api/projects/${project.id}/export`}
-                      target="_blank"
-                      rel="noreferrer"
+                    <Button
+                      className="btn-secondary btn-sm"
+                      onClick={exportEvidence}
+                      busy={busy === 'export'}
                     >
                       <ArrowDownToLine size={12} /> Export evidence
-                    </a>
+                    </Button>
                   </div>
                   <div className="paper">
                     <div className="paper-heading">
@@ -1309,7 +1423,8 @@ function Workspace() {
                         <ShieldCheck size={13} /> Project activity
                       </h3>
                       <span className="section-meta">
-                        {detail.audit.length} events · server recorded
+                        {detail.audit.length} events ·{' '}
+                        {PUBLIC_DEMO ? 'browser sample' : 'server recorded'}
                       </span>
                     </div>
                     <AuditList events={detail.audit} />
@@ -1440,7 +1555,7 @@ function ScopeItem({
             </span>
             <strong className="scope-item-price">
               {isChange
-                ? money(Math.round(hours * rate * 100))
+                ? money(Math.round(hours * Math.round(rate * 100)))
                 : item.classification === 'included'
                   ? '$0'
                   : 'TBD'}
@@ -2096,7 +2211,7 @@ function DemoGuide({ onExample, busy }: { onExample: () => void; busy: boolean }
   const steps = [
     [
       'The original agreement',
-      'A $300 landing-page project includes desktop design and one round of copy edits. The client sends three requests.',
+      'A $300 landing-page project includes desktop design and two rounds of copy revisions. The client sends three requests.',
     ],
     [
       'A fair scope review',
@@ -2112,7 +2227,9 @@ function DemoGuide({ onExample, busy }: { onExample: () => void; busy: boolean }
     ],
     [
       'Real sandbox invoicing',
-      'Return to the workspace, refresh approval, and create the PayPal invoice. Pay it with a sandbox buyer account, then check payment status.',
+      PUBLIC_DEMO
+        ? 'The public sample stops at approval. Watch the recorded real sandbox payment, or run the full app with your own PayPal sandbox credentials.'
+        : 'Return to the workspace, refresh approval, and create the PayPal invoice. Pay it with a sandbox buyer account, then check payment status.',
     ],
   ];
   return (
@@ -2149,7 +2266,9 @@ function Integrations({ state }: { state: IntegrationState }) {
   return (
     <>
       <p className="modal-subtitle">
-        Private credentials stay on the server. Your browser receives only connection status.
+        {PUBLIC_DEMO
+          ? 'This public sample has no credentials and makes no AI or PayPal calls. The full app keeps private credentials on the server.'
+          : 'Private credentials stay on the server. Your browser receives only connection status.'}
       </p>
       <div className="integration-list">
         <div className="integration-row">
@@ -2259,10 +2378,11 @@ function ClientReview({ token }: { token: string }) {
       <header className="review-topbar">
         <Brand />
         <span className="secure-label">
-          <LockKeyhole size={12} /> Private client review
+          <LockKeyhole size={12} /> {PUBLIC_DEMO ? 'Sample client review' : 'Private client review'}
         </span>
       </header>
       <main className="review-content">
+        <PublicSampleNotice />
         {loading ? (
           <div className="loading-page" style={{ minHeight: 400 }}>
             <LoaderCircle size={17} className="spin" /> Opening your proposal…

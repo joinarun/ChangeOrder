@@ -305,3 +305,56 @@ test('a client decline prevents invoicing and cannot be silently changed to acce
     store.close();
   }
 });
+
+test('changed source terms block sharing an old draft while preserving already-shared proposals', async () => {
+  const store = new Store(':memory:');
+  const { app } = createApp({ store, ownerAccessCode: '' });
+  const server = app.listen(0, '127.0.0.1');
+  await new Promise<void>((resolve) => server.once('listening', resolve));
+  const base = `http://127.0.0.1:${(server.address() as { port: number }).port}`;
+  async function request(path: string, method = 'POST', body: unknown = {}) {
+    const response = await fetch(base + path, {
+      method,
+      headers: { 'Content-Type': 'application/json' },
+      ...(method !== 'GET' ? { body: JSON.stringify(body) } : {}),
+    });
+    return { status: response.status, body: (await response.json()) as any };
+  }
+  try {
+    const project = (await request('/api/projects/seed')).body.project;
+    const analysis = (
+      await request(`/api/projects/${project.id}/analyze`, 'POST', { mode: 'sample' })
+    ).body.analysis;
+    const existing = (
+      await request(`/api/projects/${project.id}/change-orders`, 'POST', {
+        analysisId: analysis.id,
+      })
+    ).body.changeOrder;
+    const staleDraft = (
+      await request(`/api/projects/${project.id}/change-orders`, 'POST', {
+        analysisId: analysis.id,
+      })
+    ).body.changeOrder;
+    const shared = (await request(`/api/change-orders/${existing.id}/share`)).body.changeOrder;
+    await request(`/api/projects/${project.id}`, 'PATCH', {
+      brief: `${project.brief}\nAmendment: the mobile checkout flow is now included in the original fee.`,
+    });
+
+    const blocked = await request(`/api/change-orders/${staleDraft.id}/share`);
+    assert.equal(blocked.status, 409);
+    assert.equal(blocked.body.code, 'STALE_ANALYSIS');
+    assert.equal(store.order(staleDraft.id)!.status, 'draft');
+    assert.equal(store.order(staleDraft.id)!.reviewToken, undefined);
+
+    const repeated = await request(`/api/change-orders/${existing.id}/share`);
+    assert.equal(repeated.status, 200);
+    assert.equal(repeated.body.changeOrder.reviewToken, shared.reviewToken);
+    assert.equal(repeated.body.changeOrder.termsHash, shared.termsHash);
+    assert.equal(store.order(existing.id)!.sourceSnapshot.brief, project.brief);
+  } finally {
+    await new Promise<void>((resolve, reject) =>
+      server.close((error) => (error ? reject(error) : resolve())),
+    );
+    store.close();
+  }
+});

@@ -46,3 +46,11 @@ The tests exercise access/origin checks, exact evidence and source IDs, included
 ## Screenshots
 
 The files under [screenshots](screenshots/) capture the actual synthetic demo, including live source analysis, client review, PayPal invoice, PayPal success screen, and the application's independently confirmed payment state.
+
+## Submission improvements on November 10, 2026
+
+The post-submission review added an AG Grid Community Evidence ledger and a separately built browser-only sample. In browser QA, filtering Included kept the additional-work selection while disabling all included rows; editing checkout to 3.25 hours at $60 produced $195 in both ledger and cards; restoring two hours produced a $120 proposal. A second same-browser tab accepted the shared sample terms. The owner refreshed the approval, and PayPal invoicing remained disabled. This sample does not call a model or payment API and never simulates paid invoices.
+
+Two regression fixes were reproduced and checked: changed sources cannot cross the draft-sharing boundary, and prewritten findings reject amended agreements, edited requests, or additional requests. The final automated suite has 14 passing tests, with typecheck and both production builds passing. The configured credential values were scanned against the normal and public browser build files with no matches. The ledger is loaded only when opened; the normal initial JavaScript is about 288KB uncompressed (88KB gzip).
+
+[Actual ledger screenshot](screenshots/evidence-ledger.jpg). Public deployment and CI are verified separately after the source push.

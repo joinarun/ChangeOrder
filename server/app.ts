@@ -467,6 +467,13 @@ export function createApp(options: AppOptions = {}) {
   app.post('/api/change-orders/:id/share', owner, (request, response) => {
     const order = orderOrThrow(request.params.id as string);
     if (order.status === 'draft') {
+      const analysis = store.analysis(order.analysisId);
+      if (!analysis || sourceHash(projectOrThrow(order.projectId)) !== analysis.sourceHash)
+        throw new AppError(
+          409,
+          'STALE_ANALYSIS',
+          'The brief, messages, or hourly rate changed after this draft was created. Analyze the latest sources and create a new proposal before sharing.',
+        );
       order.status = 'sent';
       order.reviewToken = randomBytes(32).toString('hex');
       order.termsHash = termsHash(order);

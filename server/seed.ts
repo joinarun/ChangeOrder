@@ -1,21 +1,8 @@
 import { randomUUID } from 'node:crypto';
 import type { Analysis, Project } from './types.js';
 import { AppError, sourceHash, validateEvidence } from './domain.js';
-
-export const DEMO_BRIEF = `PROJECT: Orbit Studio landing page
-Fixed project fee: $300 USD.
-
-AGREED DELIVERABLES
-One desktop marketing landing page with a hero, benefits section, and contact form.
-Two rounds of headline and body copy revisions are included.
-Delivery includes the source files and a deployment handoff.
-
-OUTSIDE THIS AGREEMENT
-E-commerce, payment processing, mobile checkout, and additional pages are excluded.
-Additional work requires a separately approved change order at $60 per hour.
-
-TIMELINE
-Target delivery: Friday, subject to final content approval.`;
+import { DEMO_BRIEF, DEMO_REQUEST_TEXTS, matchesDemoSources } from '../src/demo-fixture.js';
+export { DEMO_BRIEF } from '../src/demo-fixture.js';
 export function seedProject(): Project {
   const now = new Date().toISOString();
   return {
@@ -32,19 +19,19 @@ export function seedProject(): Project {
       {
         id: randomUUID(),
         author: 'Jamie',
-        text: 'Could you change the hero headline to “A better way to launch”? This is one of the two copy revisions.',
+        text: DEMO_REQUEST_TEXTS[0],
         createdAt: now,
       },
       {
         id: randomUUID(),
         author: 'Jamie',
-        text: 'Could you also add a mobile checkout flow with payment confirmation? We would love customers to buy directly from their phones.',
+        text: DEMO_REQUEST_TEXTS[1],
         createdAt: now,
       },
       {
         id: randomUUID(),
         author: 'Jamie',
-        text: 'Can we launch next Friday, or do you need more time?',
+        text: DEMO_REQUEST_TEXTS[2],
         createdAt: now,
       },
     ],
@@ -62,14 +49,7 @@ export function sampleAnalysis(project: Project): Analysis {
   const clarify = project.messages.find((message) =>
     message.text.includes('Can we launch next Friday, or do you need more time?'),
   );
-  if (
-    !project.brief.includes(
-      'E-commerce, payment processing, mobile checkout, and additional pages are excluded.',
-    ) ||
-    !change ||
-    !included ||
-    !clarify
-  )
+  if (!matchesDemoSources(project) || !change || !included || !clarify)
     throw new AppError(
       400,
       'SAMPLE_NOT_APPLICABLE',

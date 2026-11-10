@@ -1,67 +1,58 @@
-# ChangeOrder demo script
+# ChangeOrder published demo and judge walkthrough
 
-Target recording length: 2 minutes 45 seconds. Record the working application. Use the presentation as a walkthrough and rehearsal aid, rather than substituting slides for the functional demo.
+The [published demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) runs **2:26** and records the working application. It shows live GPT-4.1 analysis, human review of the estimate, client acceptance, a fresh PayPal sandbox invoice, sandbox checkout, and an authenticated payment-status check. The screen recording is edited for pacing and uses standard synthetic English narration and burned-in captions. No payment state was fabricated.
 
 The full live-analysis and PayPal sandbox payment flow was verified on November 10, 2026. Invoice `INV2-JDLS-UTKF-VGMS-DUD8` reached `PAID` with $120 received after an authenticated PayPal API refresh. Live webhook delivery was not tested on localhost.
 
-## Before recording
+The published recording is a separate fresh run with invoice `INV2-FNSQ-7F8U-BP9S-425P`. It visibly changes the model's initial **eight-hour** estimate to the freelancer's chosen **two hours**, producing the $120 proposal. The two invoice identifiers document separate test runs.
 
-- Start the application and check the integration status.
-- Use a fresh sample project with a $300 original agreement and a proposed $120 mobile checkout addition.
-- Keep the original brief, client messages, and both browser perspectives ready.
-- Use sandbox accounts and fictional project data. Keep tokens, credentials, personal browser tabs, and developer secrets out of the recording.
-- Use the app's actual integration labels. Sample analysis and live proxy analysis are different modes.
-- Show a payment confirmation only after PayPal confirms the invoice status. Approval alone does not mean payment.
+## Judge access
 
-## 00:00–00:20: the problem
+Open the [interactive browser sample](https://joinarun.github.io/ChangeOrder/) to review the supplied brief and three requests, load prewritten findings, edit hours, create a proposal, and test client acceptance or decline. Data stays in that browser. A sample review link works in another tab using the same storage; it does not share state with another person's browser. The sample makes **no AI or PayPal calls**, stops at approval, and cannot produce an invoice or a paid status.
 
-“A freelancer agrees to a $300 landing page. Then the client asks for mobile checkout. The request sounds small, but it changes the work. The freelancer needs a fair way to explain the change, agree on a price, and get paid.”
+To run this no-key sample locally:
 
-Show the project brief and messages. Point out one included copy correction beside the mobile checkout request.
+```sh
+npm ci
+npm run demo
+```
 
-## 00:20–00:55: evidence-backed analysis
+Open http://localhost:5174. No `.env`, access code, or provider credentials are needed. For live analysis and the complete sandbox payment flow, use the [README's full local setup](../README.md#run-the-complete-local-application) with your own credentials.
 
-“ChangeOrder compares the agreement with the client’s actual requests. Each finding links back to the source text. The copy correction stays included. The checkout addition becomes a proposed change. The freelancer reviews the reasoning before sending anything.”
+The current application also includes an **AG Grid Community evidence ledger** for sorting/filtering findings, reviewing source detail, editing hours, and selecting only additional work. Its state stays synchronized with the cards and proposal total. This ledger can be explored in the current sample; the published recording demonstrates the earlier core live workflow and does not show the ledger.
 
-Run analysis in the application. Open the supporting brief quote and request quote. Show at least one included item to demonstrate that the app does not charge for every request.
+## 00:00–00:16: the problem
 
-## 00:55–01:20: a clear proposal
+The opening presents the $300 project and the new mobile-checkout request. The benefit is a clear decision about the extra work and its price.
 
-“The freelancer controls the estimate and the price. Here, two hours at $60 creates a $120 proposal. The amount comes from the reviewed estimate. The client receives the extra deliverable, the reason for the change, and the price in one place.”
+## 00:16–00:51: the agreement and evidence-backed analysis
 
-Review the proposed items and edit an estimate if needed. Create the client review link.
+The recording shows two included copy revisions and explicitly excluded checkout, then runs Live AI. Supporting brief and message quotations explain the classification. The included revision remains at $0, while the launch-date question needs clarification.
 
-## 01:20–01:45: client agreement
+## 00:51–01:09: a reviewed proposal
 
-“The client can review and accept the change or decline it. They see the same evidence as the freelancer. Accepting a proposal records agreement. It does not silently charge their account.”
+The freelancer changes the suggested estimate from eight hours to two. Two hours at $60 creates the $120 proposal. Sharing creates a client review link and locks the scope and price for that version.
 
-Open the client view. Show the proposal and accept it. If rejection is easier to demonstrate as a separate project, keep that as an optional backup clip.
+## 01:09–01:26: client agreement
 
-## 01:45–02:20: PayPal payment
+The client view presents the additional deliverable, price, and evidence. The recorded client accepts the proposal. The current app also allows a revision request; a declined proposal cannot create an invoice.
 
-“After approval, ChangeOrder creates a separate PayPal sandbox invoice for the agreed extra work. The original $300 agreement stays clear. The client uses PayPal’s payment page, and ChangeOrder reconciles the resulting invoice status.”
+## 01:26–02:04: PayPal invoicing and payment
 
-Create the invoice. Open the actual sandbox payment page. Complete payment with the supported sandbox account or test card, then return to ChangeOrder and use **Check payment status**. Show the provider-confirmed `PAID` status and $120 received. The supplied screenshots document the previously verified run. A fresh recording should show the new run's actual invoice state.
+The recording creates the separate invoice and opens PayPal's actual hosted sandbox page. A sandbox test-card payment is completed, then **Check payment status** fetches the invoice through PayPal's authenticated API. Only that provider-confirmed result marks $120 as received.
 
-## 02:20–02:35: trust and failure handling
+## 02:04–02:26: audit history and close
 
-“The audit history connects the request, the approved change, and the PayPal invoice. Included work stays included. The client’s approval and PayPal’s payment confirmation remain separate events.”
-
-Show the actual audit trail and point back to the included $0 headline revision. The repository's automated tests separately exercise duplicate invoice actions, forged webhook signals, stale sources, and inconsistent payment states.
-
-## 02:35–02:45: close
-
-“ChangeOrder gives freelancers a fair way to price changing work, and gives clients a clear choice before they pay. AI explains the change. People approve it. PayPal completes the payment.”
+The recording closes on the audit trail and the distinction between agreement, invoice, and payment. The repository's automated tests separately exercise duplicate invoice actions, forged webhook signals, stale sources, immutable proposals, exact sample applicability, and inconsistent payment states. Run `npm run check` to repeat the local checks; `npm run evaluate` separately requires live model access.
 
 ## Optional presenter walkthrough
 
 The companion presentation follows this story across ten slides. Use its speaker notes to rehearse, and export the saved deck as PowerPoint through the presentation viewer when an offline copy is needed.
 
-## Recording acceptance checks
+## Supporting submission materials
 
-- The video remains under three minutes.
-- The app performs the flow shown on screen.
-- AI output and sample output carry accurate labels.
-- PayPal sandbox invoice and payment states match the narration.
-- A viewer can identify the user, problem, and benefit in the opening twenty seconds.
-- The final submission links the public licensed source repository and complete run instructions.
+- [Official submitted entry](https://devpost.com/software/changeorder)
+- [Public source, MIT license, and complete run instructions](https://github.com/joinarun/ChangeOrder)
+- [Live integration verification](VERIFICATION.md)
+- [Synthetic live-model evaluation and its limits](AI_EVALUATION.md)
+- [Problem evidence and illustrative impact economics](IMPACT.md)

@@ -6,13 +6,42 @@ ChangeOrder compares a project brief with client messages, distinguishes include
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
 
+[Try the browser sample](https://joinarun.github.io/ChangeOrder/) · [Watch the 2:26 live-integration demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) · [Submitted entry](https://devpost.com/software/changeorder) · [Source code](https://github.com/joinarun/ChangeOrder) · [Problem and impact evidence](docs/IMPACT.md)
+
+The browser sample uses **prewritten findings and browser-local storage**. Explore evidence, edit the estimate, and approve or decline a proposal without a login or credentials. It makes no AI or PayPal calls and stops before invoicing. The video separately shows live GPT-4.1 analysis and an actual $120 PayPal sandbox payment confirmed through the API.
+
 ![Live scope review showing an included revision and a separate $120 addition](docs/screenshots/scope-review.jpg)
+
+## Try it in two minutes
+
+[Step-by-step judge guide](docs/JUDGE_GUIDE.md)
+
+Open the [public browser sample](https://joinarun.github.io/ChangeOrder/), review the supplied Orbit Studio brief, and choose **Review supplied requests**. Inspect the evidence, set the estimate, create a proposal, and open its review link in another tab in the same browser. Accept or request a revision, then return to the workspace to check the decision.
+
+Each browser has its own sample data. Sample review links require that same browser's storage; they are not a way to share a proposal with another person. **Reset sample** starts over. No entered data is sent to an AI or payment provider in this mode.
+
+To run the same sample locally, use Node.js 24 and npm:
+
+```sh
+npm ci
+npm run demo
+```
+
+Open [localhost:5174](http://localhost:5174). This command needs **no `.env`, access code, API keys, or server**. The complete local application below adds live analysis, server-persisted review links, and PayPal sandbox invoicing.
 
 ## The demo story
 
 Alex agrees to build a $300 landing page for Jamie. Two copy revisions are included, while checkout and payment processing are excluded. Jamie asks for a headline revision, a new mobile checkout, and confirmation of the launch date. ChangeOrder keeps the headline revision in scope, asks for clarification on timing, and drafts only the additional checkout work as a $120 proposal. Alex reviews it, Jamie accepts the exact terms, and PayPal handles the separate invoice.
 
 All people, briefs, messages, and prices in this walkthrough are synthetic.
+
+The recorded live model initially suggested **eight hours** for checkout. The freelancer reviewed the request and changed the estimate to **two hours** before sharing the $120 proposal. The price is a human decision, not a promise that the model will always return that estimate. The separate browser sample starts from a prewritten two-hour example.
+
+## Evidence ledger
+
+The scope-review screen includes an **AG Grid Community** evidence ledger alongside the detailed cards. Filter or sort findings, inspect the source-evidence detail, edit estimated hours, and select additional-work rows for the proposal. The ledger and cards share the same reviewed hours and selection; included work and clarification remain unchargeable.
+
+![Evidence ledger with protected included work, editable estimates, and exact source quotes](docs/screenshots/evidence-ledger.jpg)
 
 ## Run locally
 
@@ -81,7 +110,9 @@ For a stable HTTPS deployment, register `/api/webhooks/paypal` in the sandbox ap
 npm run check
 ```
 
-The automated suite uses isolated databases and gateway doubles. It checks the financial and access-control rules without spending money or calling external models. Live integration evidence belongs in [VERIFICATION.md](docs/VERIFICATION.md).
+The automated suite uses isolated databases, gateway doubles, and isolated browser-sample storage. It checks the financial and access-control rules, exact sample applicability, immutable terms, and separation of sample approval from real payment without spending money or calling external models. Live integration evidence belongs in [VERIFICATION.md](docs/VERIFICATION.md).
+
+Build the standalone browser sample separately with `npm run build:demo`. It contains no provider credentials and does not run the Express server.
 
 For a separate semantic check against the configured live LLM, run:
 
@@ -111,10 +142,11 @@ Keep credentials in environment variables or the host's secret manager. Change t
 
 ## Demo and submission materials
 
-- [Three-minute demo narration](docs/DEMO_SCRIPT.md)
-- [Devpost submission draft](docs/DEVPOST.md)
+- [Published demo and judge walkthrough](docs/DEMO_SCRIPT.md)
+- [Submission description and testing links](docs/DEVPOST.md)
 - [Integration verification](docs/VERIFICATION.md)
+- [Problem evidence, illustrative economics, and validation limits](docs/IMPACT.md)
 
 ## Stack
 
-React, TypeScript, Vite, Express, SQLite, an OpenAI-compatible LLM proxy, and PayPal Invoicing REST APIs. The frontend contains no provider credentials. [MIT license](LICENSE).
+React, TypeScript, Vite, AG Grid Community, Express, SQLite, an OpenAI-compatible LLM proxy, and PayPal Invoicing REST APIs. The frontend contains no provider credentials. [MIT license](LICENSE).

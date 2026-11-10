@@ -11,6 +11,8 @@
     "dev": "concurrently -k -n api,web -c cyan,blue \"npm:dev:server\" \"npm:dev:web\"",
     "dev:server": "tsx watch server/index.ts",
     "dev:web": "vite --host 127.0.0.1",
+    "demo": "vite --mode demo --host 127.0.0.1 --port 5174",
+    "build:demo": "vite build --mode demo --base=/ChangeOrder/ --outDir dist-demo",
     "build": "tsc --noEmit && vite build",
     "start": "NODE_ENV=production tsx server/index.ts",
     "typecheck": "tsc --noEmit",
@@ -21,6 +23,8 @@
     "check": "npm run typecheck && npm test && npm run build"
   },
   "dependencies": {
+    "ag-grid-community": "^36.3.0",
+    "ag-grid-react": "^36.3.0",
     "dotenv": "^17.2.3",
     "express": "^5.1.0",
     "lucide-react": "^0.468.0",
