@@ -1,0 +1,10 @@
+node_modules/
+dist/
+data/
+.private/
+.env
+.env.*
+accesstoken.txt
+NoteGPT_Subtitles_*.txt
+docs/screenshots/
+package-lock.json
