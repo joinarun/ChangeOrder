@@ -1,0 +1,17 @@
+node_modules/
+dist/
+data/
+.env
+.env.*
+!.env.example
+accesstoken.txt
+NoteGPT_Subtitles_*.txt
+*.sqlite
+*.sqlite-*
+.DS_Store
+coverage/
+test-results/
+playwright-report/
+.private/
+*.log
+
