@@ -70,7 +70,7 @@ const ScopeLedger = lazy(() =>
 
 const PUBLIC_DEMO = import.meta.env.MODE === 'demo';
 const SOURCE_URL = 'https://github.com/joinarun/ChangeOrder';
-const VIDEO_URL = 'https://www.youtube.com/watch?v=3MrY5qSpn4E';
+const VIDEO_URL = 'https://www.youtube.com/watch?v=Ot-nicfez7c';
 
 type Stage = 'brief' | 'scope' | 'proposal' | 'activity';
 type ModalName = 'new-project' | 'guide' | 'integrations' | 'edit-proposal' | null;
@@ -176,7 +176,7 @@ function PublicSampleNotice({ onStart, busy = false }: { onStart?: () => void; b
           </button>
         )}
         <a href={VIDEO_URL} target="_blank" rel="noreferrer">
-          Watch the real sandbox payment <ExternalLink size={11} />
+          Watch the 2:41 app demo <ExternalLink size={11} />
         </a>
         <a href={`${SOURCE_URL}#run-locally`} target="_blank" rel="noreferrer">
           Run the full app <ArrowRight size={11} />
@@ -2251,7 +2251,7 @@ function DemoGuide({ onExample, busy }: { onExample: () => void; busy: boolean }
       <div className="guide-rule">
         <ShieldCheck size={12} style={{ verticalAlign: 'middle', marginRight: 6 }} /> All payments
         use PayPal sandbox test funds. Sample analysis is clearly marked. Live AI uses the server’s
-        configured LLM proxy.
+        configured model gateway.
       </div>
       <div className="modal-actions">
         <Button className="btn-primary" onClick={onExample} busy={busy}>

@@ -15,9 +15,9 @@ Sample links use browser-local storage and do not share data between devices or 
 
 ## See and reproduce the live integrations
 
-[The public 2:26 video](https://www.youtube.com/watch?v=3MrY5qSpn4E) records live GPT-4.1 analysis, a freelancer correcting an eight-hour estimate to two hours, client acceptance, a real PayPal sandbox invoice, test-card checkout, and authenticated confirmation of $120 received. All project data and funds are synthetic. The recording predates the Evidence ledger enhancement.
+[The 2:41 video](https://www.youtube.com/watch?v=Ot-nicfez7c) records live GPT-4.1 analysis, a freelancer correcting an eight-hour estimate to two hours, client acceptance, a real PayPal sandbox invoice, test-card checkout, and authenticated confirmation of $120 received. It also shows the evidence ledger in a clearly labeled public sample using prewritten findings. All project data and funds are synthetic. The video uses stock Gemini Achird conversational synthetic narration and privacy-edited app footage.
 
-To reproduce those integrations, follow [the full local setup](../README.md#run-locally) with your own compatible AI endpoint and PayPal sandbox credentials. The recorded corporate model proxy may require its authorized network. No shared provider secrets are distributed.
+To reproduce those integrations, follow [the full local setup](../README.md#run-locally) with your own authorized OpenAI-compatible model gateway and PayPal sandbox credentials. No shared provider secrets are distributed.
 
 ## Assess the implementation
 

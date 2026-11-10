@@ -1,10 +1,8 @@
-# ChangeOrder published demo and judge walkthrough
+# ChangeOrder demo and judge walkthrough
 
-The [published demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) runs **2:26** and records the working application. It shows live GPT-4.1 analysis, human review of the estimate, client acceptance, a fresh PayPal sandbox invoice, sandbox checkout, and an authenticated payment-status check. The screen recording is edited for pacing and uses standard synthetic English narration and burned-in captions. No payment state was fabricated.
+The [demo](https://www.youtube.com/watch?v=Ot-nicfez7c) runs **2:41** and records the working application: live AI analysis, human review of the estimate, client acceptance, a fresh PayPal sandbox invoice, sandbox checkout, and an authenticated payment-status check. It also shows the current evidence ledger in a clearly labeled **public sample using prewritten findings**. The recording uses stock Gemini Achird conversational synthetic narration, privacy masks, and burned-in captions.
 
-The full live-analysis and PayPal sandbox payment flow was verified on November 10, 2026. Invoice `INV2-JDLS-UTKF-VGMS-DUD8` reached `PAID` with $120 received after an authenticated PayPal API refresh. Live webhook delivery was not tested on localhost.
-
-The published recording is a separate fresh run with invoice `INV2-FNSQ-7F8U-BP9S-425P`. It visibly changes the model's initial **eight-hour** estimate to the freelancer's chosen **two hours**, producing the $120 proposal. The two invoice identifiers document separate test runs.
+The full live-analysis and PayPal sandbox payment flow was verified on November 10, 2026. The recorded run visibly changes the model's initial **eight-hour** estimate to the freelancer's chosen **two hours**, producing a **$120** proposal. PayPal subsequently reports `PAID` with $120 received after an authenticated API refresh. All funds are sandbox test funds. Live webhook delivery was not tested on localhost.
 
 ## Judge access
 
@@ -17,37 +15,35 @@ npm ci
 npm run demo
 ```
 
-Open http://localhost:5174. No `.env`, access code, or provider credentials are needed. For live analysis and the complete sandbox payment flow, use the [README's full local setup](../README.md#run-the-complete-local-application) with your own credentials.
+Open http://localhost:5174. No `.env`, access code, or provider credentials are needed. For live analysis and the complete sandbox payment flow, use the [README's full local setup](../README.md#run-locally) with your own credentials.
 
-The current application also includes an **AG Grid Community evidence ledger** for sorting/filtering findings, reviewing source detail, editing hours, and selecting only additional work. Its state stays synchronized with the cards and proposal total. This ledger can be explored in the current sample; the published recording demonstrates the earlier core live workflow and does not show the ledger.
+## Recording chapters
 
-## 00:00–00:16: the problem
+Times are rounded to the nearest second. The native video contains nine chapter markers.
 
-The opening presents the $300 project and the new mobile-checkout request. The benefit is a clear decision about the extra work and its price.
+| Start | Chapter | What to look for |
+| --- | --- | --- |
+| 00:00 | The extra work problem | A small request can create unpaid work on a fixed-price project. |
+| 00:16 | The agreement and three requests | A $300 brief includes two copy revisions and excludes checkout. The headline, checkout, and launch date need different decisions. |
+| 00:32 | Live AI with source evidence | Live analysis classifies the requests and presents quotations from the brief and message. The server checks the quoted text; the freelancer reviews the interpretation. |
+| 00:50 | Evidence ledger — prewritten public sample | Filter findings, inspect sources, and edit hours in the AG Grid Community ledger. Included work cannot be selected for billing; cards and proposal totals stay synchronized. This segment uses prewritten findings. |
+| 01:06 | Human review of the price | Back in the live run, the freelancer changes eight suggested hours to two. At $60 per hour, the checkout addition costs $120. Sharing locks that scope and price. |
+| 01:24 | Client agreement | The client sees the deliverable, price, and evidence, then accepts. Acceptance records a test approval; it does not charge an account or mark an invoice paid. |
+| 01:41 | A separate PayPal sandbox invoice | The app creates a separate $120 sandbox invoice and opens PayPal's actual hosted payment page. The original project fee stays separate. |
+| 01:59 | PayPal confirms payment | A sandbox test card completes checkout. **Check payment status** retrieves the invoice through PayPal's authenticated API; the provider-confirmed result marks $120 received. |
+| 02:20 | Activity record and close | The activity record connects the request, approval, invoice, and verified payment. Judges can try the browser sample or run the full build locally. |
 
-## 00:16–00:51: the agreement and evidence-backed analysis
+## Recording and validation
 
-The recording shows two included copy revisions and explicitly excluded checkout, then runs Live AI. Supporting brief and message quotations explain the classification. The included revision remains at $0, while the launch-date question needs clarification.
+The screen recording is edited for pacing from actual app captures. Account details and private review addresses are masked. Invoice loading frames are replaced with a hold on a later actual loaded invoice screenshot; no UI or payment state is fabricated. Narration plays at its original speed.
 
-## 00:51–01:09: a reviewed proposal
+The revised export passed complete video/audio decoding and privacy checks on all 244 captured source states and 280 samples from the final encoded video. Its 39 captions follow the authorized narration script. Automatic caption timing was aligned to the audio; it has not been manually checked word by word.
 
-The freelancer changes the suggested estimate from eight hours to two. Two hours at $60 creates the $120 proposal. Sharing creates a client review link and locks the scope and price for that version.
+The repository's automated tests separately exercise duplicate invoice actions, forged webhook signals, stale sources, immutable proposals, exact sample applicability, and inconsistent payment states. Run `npm run check` to repeat the local checks; `npm run evaluate` separately requires live model access.
 
-## 01:09–01:26: client agreement
+## Presenter walkthrough
 
-The client view presents the additional deliverable, price, and evidence. The recorded client accepts the proposal. The current app also allows a revision request; a declined proposal cannot create an invoice.
-
-## 01:26–02:04: PayPal invoicing and payment
-
-The recording creates the separate invoice and opens PayPal's actual hosted sandbox page. A sandbox test-card payment is completed, then **Check payment status** fetches the invoice through PayPal's authenticated API. Only that provider-confirmed result marks $120 as received.
-
-## 02:04–02:26: audit history and close
-
-The recording closes on the audit trail and the distinction between agreement, invoice, and payment. The repository's automated tests separately exercise duplicate invoice actions, forged webhook signals, stale sources, immutable proposals, exact sample applicability, and inconsistent payment states. Run `npm run check` to repeat the local checks; `npm run evaluate` separately requires live model access.
-
-## Optional presenter walkthrough
-
-The companion presentation follows this story across ten slides. Use its speaker notes to rehearse, and export the saved deck as PowerPoint through the presentation viewer when an offline copy is needed.
+The companion presentation follows the same story. Use its speaker notes to rehearse, and export the saved deck as PowerPoint through the presentation viewer when an offline copy is needed.
 
 ## Supporting submission materials
 

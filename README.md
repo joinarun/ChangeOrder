@@ -6,9 +6,9 @@ ChangeOrder compares a project brief with client messages, distinguishes include
 
 Built for the [PayPal AI Hackathon](https://paypalaihackathon.devpost.com/).
 
-[Try the browser sample](https://joinarun.github.io/ChangeOrder/) · [Watch the 2:26 live-integration demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) · [Submitted entry](https://devpost.com/software/changeorder) · [Source code](https://github.com/joinarun/ChangeOrder) · [Problem and impact evidence](docs/IMPACT.md)
+[Try the browser sample](https://joinarun.github.io/ChangeOrder/) · [Watch the 2:41 app demo](https://www.youtube.com/watch?v=Ot-nicfez7c) · [Submitted entry](https://devpost.com/software/changeorder) · [Source code](https://github.com/joinarun/ChangeOrder) · [Problem and impact evidence](docs/IMPACT.md)
 
-The browser sample uses **prewritten findings and browser-local storage**. Explore evidence, edit the estimate, and approve or decline a proposal without a login or credentials. It makes no AI or PayPal calls and stops before invoicing. The video separately shows live GPT-4.1 analysis and an actual $120 PayPal sandbox payment confirmed through the API.
+The browser sample uses **prewritten findings and browser-local storage**. Explore evidence, edit the estimate, and approve or decline a proposal without a login or credentials. It makes no AI or PayPal calls and stops before invoicing. The 2:41 video shows live GPT-4.1 analysis and an actual $120 PayPal sandbox payment confirmed through the API, plus a clearly labeled evidence-ledger segment using the prewritten public sample. It uses stock Gemini Achird conversational synthetic narration and privacy-edited footage.
 
 ![Live scope review showing an included revision and a separate $120 addition](docs/screenshots/scope-evidence.png)
 
@@ -74,7 +74,7 @@ The server uses a configurable OpenAI-compatible chat-completions gateway with a
 
 Without AI credentials, use the explicitly labeled **sample walkthrough**. It contains prewritten findings for the supplied story. Live inference failures remain visible and never silently become sample results.
 
-Use synthetic material with an integration/testing proxy. The application removes configured participant names and email addresses from its model input, but this is not a complete anonymization system.
+Use synthetic material with an integration/testing model gateway. The application removes configured participant names and email addresses from its model input, but this is not a complete anonymization system.
 
 For your own synthetic project, choose **New project**, enter the brief and client details, then **Add request** and **Review the scope** using Live AI. Expand a finding to edit its estimated hours. The summary sets the hourly rate, and **Edit proposal** lets you review individual draft lines before sharing.
 
@@ -120,7 +120,7 @@ For a separate semantic check against the configured live LLM, run:
 npm run evaluate
 ```
 
-This sends only the script's synthetic test scenarios to the configured proxy and records actual results in [AI_EVALUATION.md](docs/AI_EVALUATION.md). It requires live model credentials and network access. It does not run in CI.
+This sends only the script's synthetic test scenarios to the configured model gateway and records actual results in [AI_EVALUATION.md](docs/AI_EVALUATION.md). It requires live model credentials and network access. It does not run in CI.
 
 ## Production build
 
@@ -149,4 +149,4 @@ Keep credentials in environment variables or the host's secret manager. Change t
 
 ## Stack
 
-React, TypeScript, Vite, AG Grid Community, Express, SQLite, an OpenAI-compatible LLM proxy, and PayPal Invoicing REST APIs. The frontend contains no provider credentials. [MIT license](LICENSE).
+React, TypeScript, Vite, AG Grid Community, Express, SQLite, an OpenAI-compatible model gateway, and PayPal Invoicing REST APIs. The frontend contains no provider credentials. [MIT license](LICENSE).

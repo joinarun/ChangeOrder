@@ -1,12 +1,12 @@
 # ChangeOrder
 
-[Official submitted entry](https://devpost.com/software/changeorder) · [Interactive browser sample](https://joinarun.github.io/ChangeOrder/) · [Published 2:26 demo](https://www.youtube.com/watch?v=3MrY5qSpn4E) · [Public MIT-licensed source](https://github.com/joinarun/ChangeOrder)
+[Official submitted entry](https://devpost.com/software/changeorder) · [Interactive browser sample](https://joinarun.github.io/ChangeOrder/) · [2:41 demo](https://www.youtube.com/watch?v=Ot-nicfez7c) · [Public MIT-licensed source](https://github.com/joinarun/ChangeOrder)
 
 ## Judge access
 
 The public browser sample lets judges inspect the supplied brief and requests, load explicitly prewritten findings, review evidence, edit the estimate, and test client acceptance or decline. It stores data only in that browser and makes no AI or PayPal calls. Review links work in another tab sharing that browser's storage; approval is the endpoint of this sample, and it creates no invoice or paid state.
 
-For the same no-key experience locally, run `npm ci` and `npm run demo`, then open http://localhost:5174. No `.env`, login, model access, or PayPal account is needed. The complete local build described in the README enables live analysis and actual sandbox invoicing with the judge's own credentials. The public video demonstrates that full integrated flow with fictional project data and sandbox funds.
+For the same no-key experience locally, run `npm ci` and `npm run demo`, then open http://localhost:5174. No `.env`, login, model access, or PayPal account is needed. The complete local build described in the README enables live analysis and actual sandbox invoicing with the judge's own credentials. The 2:41 video demonstrates that full integrated flow with fictional project data and sandbox funds, plus a clearly labeled evidence-ledger segment from the prewritten public sample. It uses stock Gemini Achird conversational synthetic narration and privacy-edited footage.
 
 ## Elevator pitch
 
@@ -30,7 +30,7 @@ The language model interprets unstructured project briefs and client messages. I
 
 ## Technical implementation
 
-The application uses React and TypeScript for the workspace and client review screens. An Express server stores project history in SQLite. GPT-4.1 runs through the configured LLM proxy and returns structured scope findings. Zod validates the response, and application code checks quoted evidence against the original sources. Prices use integer cents and reviewed hours and rates.
+The application uses React and TypeScript for the workspace and client review screens. An Express server stores project history in SQLite. GPT-4.1 runs through a configured OpenAI-compatible model gateway and returns structured scope findings. Zod validates the response, and application code checks quoted evidence against the original sources. Prices use integer cents and reviewed hours and rates.
 
 AG Grid Community powers an evidence ledger in scope review. Users can filter and sort findings, inspect source-evidence details, edit estimated hours, and select additional-work rows. These controls share state with the review cards and proposal total. Included work and clarification cannot be selected for a charge.
 
@@ -40,7 +40,7 @@ Shared proposals preserve their terms. Client acceptance and invoice payment are
 
 The complete flow ran on November 10, 2026: live GPT-4.1 analysis, source-checked findings, a $120 draft, client review and acceptance, a real PayPal sandbox invoice, sandbox card payment, and an authenticated PayPal API refresh confirming `PAID` with $120 received. The invoice was `INV2-JDLS-UTKF-VGMS-DUD8`. All project data and money in this scenario are test data.
 
-The separately recorded public demo shows a fresh run with invoice `INV2-FNSQ-7F8U-BP9S-425P`. The model initially suggested eight hours; the freelancer changed the estimate to two hours before sharing a $120 proposal. This human review is visible in the recording. The recording demonstrates the core live flow; the current interactive sample and source also contain the evidence ledger.
+The separately recorded public demo shows a fresh run with invoice `INV2-FNSQ-7F8U-BP9S-425P`. The model initially suggested eight hours; the freelancer changed the estimate to two hours before sharing a $120 proposal. This human review is visible in the recording. The recording demonstrates the live integration flow and includes the evidence ledger in a separate, clearly labeled public sample using prewritten findings.
 
 The local demonstration confirmed payment by refreshing the PayPal invoice API. It did not test live webhook delivery to localhost. Automated tests cover webhook signature rejection and duplicate-event handling with a test gateway.
 
@@ -75,7 +75,7 @@ Potential extensions include importing messages from tools freelancers already u
 - Official submitted entry: https://devpost.com/software/changeorder
 - Public repository: https://github.com/joinarun/ChangeOrder
 - Interactive sample: https://joinarun.github.io/ChangeOrder/ — prewritten findings, browser-local state, approval only, no live provider calls.
-- Public demo video: https://www.youtube.com/watch?v=3MrY5qSpn4E — 2:26, showing live AI and actual PayPal sandbox payment.
+- Public demo video: https://www.youtube.com/watch?v=Ot-nicfez7c — 2:41, showing live AI, actual PayPal sandbox payment, and a clearly labeled prewritten public evidence-ledger sample.
 - Tools used: GPT-4.1 through a server-side OpenAI-compatible gateway, PayPal Invoicing REST API and sandbox, AG Grid Community, React, TypeScript, Vite, Express, Node.js SQLite, and Zod.
 - License: MIT, with a root `LICENSE` file.
 - No-key testing: Node.js 24, `npm ci`, then `npm run demo`; open http://localhost:5174. The fixed sample needs no `.env` or login.
